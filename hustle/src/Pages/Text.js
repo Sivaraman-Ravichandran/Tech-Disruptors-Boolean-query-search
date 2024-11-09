@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./Text.css"; // Import the CSS file
+import AIChatbot from "./AIChatbot";
+import { FaRobot } from "react-icons/fa"; // Import the robot icon from react-icons
+import "./Text.css";
 
 const PubMedFetch = () => {
   const [query, setQuery] = useState("");
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showChatbot, setShowChatbot] = useState(false); // New state to toggle chatbot visibility
 
   const API_KEY = "804ddd7039a0aa6beca67d3c099ec923fd09";
 
@@ -60,6 +63,9 @@ const PubMedFetch = () => {
     e.preventDefault();
     fetchArticles();
   };
+
+  const toggleChatbot = () => setShowChatbot((prev) => !prev); // Toggle chatbot visibility
+
   return (
     <div className="container">
       <h1>Search by Text</h1>
@@ -70,7 +76,6 @@ const PubMedFetch = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-
         <button type="submit">Search</button>
       </form>
 
@@ -102,6 +107,14 @@ const PubMedFetch = () => {
           </div>
         ))}
       </div>
+
+      {/* Round button to toggle chatbot */}
+      <button className="chatbot-toggle-button" onClick={toggleChatbot}>
+        <FaRobot />
+      </button>
+
+      {/* Show chatbot if showChatbot is true */}
+      {showChatbot && <AIChatbot />}
     </div>
   );
 };

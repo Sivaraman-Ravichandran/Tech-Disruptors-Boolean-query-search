@@ -1,14 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,make_response
 from flask_cors import CORS
 import requests
 import logging
 import os
-
+import google.generativeai as genai
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # Fetch API key from environment variable or set it here directly (not recommended for production)
 SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY', '2581020de06d3cbb4b237f811dcefbaa407b96ecad5f17151c770ebc67d42c7f')
+genai.configure(api_key=os.getenv("GENAI_API_KEY", "AIzaSyAzxCfR0e2gSntJW9fAo-Gl3RcWy_W7k0U"))
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -77,6 +78,43 @@ def perform_image_search(image_url):
         logger.error(f"Error fetching data from SerpApi: {e}")
         return jsonify({'error': 'Failed to fetch data from SerpApi'}), 500
 
+# Set up Google Generative AI with the API key
+genai.configure(api_key=os.getenv("GENAI_API_KEY", "AIzaSyAzxCfR0e2gSntJW9fAo-Gl3RcWy_W7k0U"))
+
+# Model configuration
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+
+# Initialize model and start a chat session
+model = genai.GenerativeModel(
+    model_name="tunedModels/pubmedqueries-7nl00mb4z24w",
+    generation_config=generation_config,
+)
+chat_session = model.start_chat()
+
+# AI response function
+def get_ai_response(user_input):
+    try:
+        response = chat_session.send_message(user_input)
+        return response.text
+    except Exception as e:
+        print(f"Error in fetching response: {e}")
+        return "Sorry, an error occurred while processing your request."
+
+# Define the chat route
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json()
+    user_input = data.get("message", "")
+    ai_response = get_ai_response(user_input)
+    return make_response(jsonify({"reply": ai_response}), 200)
+
+#
 if __name__ == '__main__':
     os.makedirs('temp', exist_ok=True)  # Create a temporary directory for file storage
     app.run(port=5000, debug=True)
