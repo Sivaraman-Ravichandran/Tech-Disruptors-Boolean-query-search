@@ -62,7 +62,7 @@ const PubMedFetch = () => {
   };
   return (
     <div className="container">
-      <h1>PubMed Article Search</h1>
+      <h1>Search by Text</h1>
       <form onSubmit={handleSearch}>
         <input
           type="text"
