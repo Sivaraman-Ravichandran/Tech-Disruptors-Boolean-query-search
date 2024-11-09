@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./Text.css"; // Import the CSS file
 
 const PubMedFetch = () => {
   const [query, setQuery] = useState("");
@@ -27,7 +28,6 @@ const PubMedFetch = () => {
       );
 
       const ids = response.data.esearchresult.idlist.join(",");
-
       if (ids) {
         const articleDetails = await axios.get(
           `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi`,
@@ -40,6 +40,7 @@ const PubMedFetch = () => {
             },
           }
         );
+
         setArticles(
           Object.values(articleDetails.data.result).filter(
             (article) => article.uid
@@ -54,32 +55,42 @@ const PubMedFetch = () => {
       setLoading(false);
     }
   };
+
   const handleSearch = (e) => {
     e.preventDefault();
     fetchArticles();
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>PubMed Article Search</h1>
       <form onSubmit={handleSearch}>
         <input
           type="text"
-          placeholder="Enter search term"
+          placeholder="Enter search term (e.g., 'cancer AND therapy NOT surgery')"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button type="submit">Search</button>
       </form>
 
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {loading && <p className="loading">Loading...</p>}
+      {error && <p className="error">{error}</p>}
 
       <div>
         {articles.map((article) => (
-          <div key={article.uid}>
+          <div className="article" key={article.uid}>
             <h3>{article.title}</h3>
-            <p>{article.source}</p>
+            <p>
+              <strong>Source:</strong> {article.source}
+            </p>
+            <p>
+              <strong>Published:</strong> {article.pubdate}
+            </p>
+            <p>
+              <strong>Authors:</strong>{" "}
+              {article.authors?.map((a) => a.name).join(", ")}
+            </p>
           </div>
         ))}
       </div>
