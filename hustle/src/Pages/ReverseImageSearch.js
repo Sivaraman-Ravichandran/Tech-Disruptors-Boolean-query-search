@@ -4,23 +4,37 @@ import "./ReverseImageSearch.css"; // Assuming you've saved your CSS as a separa
 import { useNavigate } from "react-router-dom";
 
 const ReverseImageSearch = () => {
-  // State to hold the image URL and results
   const [file, setFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:5000/reverse-image-search",
-        {
-          params: {
-            image_url: imageUrl,
-          },
-        }
-      );
+      let response;
+      if (file) {
+        // If a file is uploaded, use file upload
+        const formData = new FormData();
+        formData.append("image", file);
+        response = await axios.post(
+          "http://127.0.0.1:5000/reverse-image-search-upload",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+      } else if (imageUrl) {
+        // If URL is provided, use the image URL
+        response = await axios.get(
+          "http://127.0.0.1:5000/reverse-image-search-url",
+          {
+            params: { image_url: imageUrl },
+          }
+        );
+      }
+
       setResults(response.data);
       console.log(response);
     } catch (error) {
@@ -29,13 +43,18 @@ const ReverseImageSearch = () => {
       setLoading(false);
     }
   };
-   const handleFileChange = (event) => {
+
+  const handleFileChange = (event) => {
     setFile(event.target.files[0]);
+    setImageUrl(""); // Clear the URL input if a file is selected
   };
-const resetFunc=()=>{
+
+  const resetFunc = () => {
     setResults(null);
     setImageUrl("");
-}
+    setFile(null);
+  };
+
   return (
     <div className="app">
       <h1 className="title">Research</h1>
@@ -44,7 +63,10 @@ const resetFunc=()=>{
           type="text"
           placeholder="Enter image URL"
           value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
+          onChange={(e) => {
+            setImageUrl(e.target.value);
+            setFile(null); // Clear the file input if a URL is entered
+          }}
           className="input"
         />
         <input type="file" onChange={handleFileChange} className="file-input" />
@@ -55,8 +77,8 @@ const resetFunc=()=>{
           <button onClick={handleSearch} className="hunt-button">
             Search
           </button>
-          <button onClick={()=>{navigate('/')}} className="hunt-button">
-            back
+          <button onClick={() => navigate("/")} className="hunt-button">
+            Back
           </button>
         </div>
       </div>

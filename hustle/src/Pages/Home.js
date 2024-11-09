@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "./Home.css";
-import { useNavigate } from "react-router-dom";
-
 function App() {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState("");
