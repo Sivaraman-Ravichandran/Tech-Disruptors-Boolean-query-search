@@ -1,5 +1,5 @@
 import React from "react";
-import Home from "./Pages/Home";
+import './Pages/Home.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ReverseImageSearch from "./Pages/ReverseImageSearch";
 import Navbar from "./Components/Navbar";
@@ -11,10 +11,10 @@ function App() {
       <Navbar />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Text />} />
+          
           <Route path="/search-by-image" element={<ReverseImageSearch />} />
           <Route path="/symptom-analyser" element={<Symptom />} />
-          <Route path="/text" element={<Text />} />
         </Routes>
       </BrowserRouter>
     </>

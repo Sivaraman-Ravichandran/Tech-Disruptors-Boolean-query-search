@@ -13,9 +13,6 @@ const Navbar = () => {
           <a href="/search-by-image">Research</a>
         </li>
         <li>
-          <a href="/text">Text</a>
-        </li>
-        <li>
           <a href="/symptom-analyser">Symptoms-Analyser</a>
         </li>
         <li>

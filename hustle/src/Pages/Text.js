@@ -60,7 +60,6 @@ const PubMedFetch = () => {
     e.preventDefault();
     fetchArticles();
   };
-
   return (
     <div className="container">
       <h1>PubMed Article Search</h1>
@@ -71,6 +70,7 @@ const PubMedFetch = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+
         <button type="submit">Search</button>
       </form>
 
@@ -91,6 +91,14 @@ const PubMedFetch = () => {
               <strong>Authors:</strong>{" "}
               {article.authors?.map((a) => a.name).join(", ")}
             </p>
+            <a
+              href={`https://pubmed.ncbi.nlm.nih.gov/${article.uid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="article-link"
+            >
+              View Full Article
+            </a>
           </div>
         ))}
       </div>

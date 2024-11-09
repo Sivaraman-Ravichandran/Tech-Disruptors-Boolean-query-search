@@ -9,7 +9,6 @@ from PIL import Image
 # Mock for voice and image processing
 def mock_speech_to_text(audio_data):
     return "I have a fever and headache."
-
 def mock_image_diagnosis(image):
     return "Possible Skin Rash: Eczema"
 
